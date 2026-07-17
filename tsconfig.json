@@ -6,8 +6,6 @@
     "target": "es2022",
     "module": "Node16",
     "declaration": true,
-    "composite": true,
-    "incremental": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "moduleResolution": "node16",
