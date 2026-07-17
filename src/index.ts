@@ -33,6 +33,28 @@ class Collected {
 }
 
 export const logger = new Logger("sus-chat");
+
+function isMentioned(session: Session) {
+  const sessionAny = session as any;
+  if (sessionAny.stripped?.atSelf) return true;
+  return session.elements?.some(
+    (element) =>
+      element.type === "at" &&
+      (element.attrs?.id === session.selfId || element.attrs?.name === session.selfId)
+  );
+}
+
+function isReplied(session: Session) {
+  const sessionAny = session as any;
+  const quote = sessionAny.quote ?? sessionAny.event?.message?.quote;
+  return (
+    quote?.user?.id === session.selfId ||
+    quote?.userId === session.selfId ||
+    quote?.user?.id === session.bot?.selfId ||
+    quote?.userId === session.bot?.selfId
+  );
+}
+
 export function apply(ctx: Context, config: Config) {
   const collected: Collected = new Collected(
     config.functionality.extension_count
@@ -131,7 +153,7 @@ export function apply(ctx: Context, config: Config) {
 
   // 随机回复与关键词触发与私聊触发
   ctx.middleware(async (session, next) => {
-    const content = he.decode(session.content);
+    const content = he.decode((session as any).stripped?.content ?? session.content);
     if (!content) return next();
     let for_key = false;
     let k1 = server.prompts?.get_keywords(current_prompt.get(session.cid));
@@ -150,7 +172,11 @@ export function apply(ctx: Context, config: Config) {
       Math.random() < config.functionality.tiggering?.random_reply?.probability;
     const for_direct =
       config.functionality.tiggering?.when_direct_reply && session?.isDirect;
-    if (!(for_key || for_random || for_direct)) return next();
+    const for_mentioned =
+      config.functionality.tiggering?.when_mentioned && isMentioned(session);
+    const for_replied =
+      config.functionality.tiggering?.when_replied && isReplied(session);
+    if (!(for_key || for_random || for_direct || for_mentioned || for_replied)) return next();
     const result = await chat?.(session, content);
     return result ?? next();
   });

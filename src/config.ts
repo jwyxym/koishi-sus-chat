@@ -26,6 +26,8 @@ export interface Config {
         use_regex: boolean;
       };
       when_direct_reply: boolean;
+      when_mentioned: boolean;
+      when_replied: boolean;
     };
   };
 }
@@ -121,6 +123,12 @@ export const Config: Schema<Config> = Schema.object({
       when_direct_reply: Schema.boolean()
         .default(false)
         .description("是否于私聊时无需任何方式，直接触发"),
+      when_mentioned: Schema.boolean()
+        .default(false)
+        .description("是否在被艾特时触发"),
+      when_replied: Schema.boolean()
+        .default(false)
+        .description("是否在被回复时触发"),
     }),
   }).description("功能性"),
 });

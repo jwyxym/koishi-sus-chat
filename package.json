@@ -9,6 +9,10 @@
     "resources"
   ],
   "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
   "keywords": [
     "chatbot",
     "koishi",
@@ -102,6 +106,7 @@
     "liquidjs": "^10.12.0"
   },
   "devDependencies": {
-    "@types/he": "^1"
+    "@types/he": "^1",
+    "typescript": "^7.0.2"
   }
 }
