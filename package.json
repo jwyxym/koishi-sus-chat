@@ -3,11 +3,6 @@
   "description": "超简单超棒的AI聊天, 启动!",
   "version": "0.13.2",
   "main": "lib/index.js",
-  "files": [
-    "dist",
-    "lib",
-    "resources"
-  ],
   "license": "MIT",
   "scripts": {
     "build": "tsc",
