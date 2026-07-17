@@ -47,12 +47,16 @@ function isMentioned(session: Session) {
 function isReplied(session: Session) {
   const sessionAny = session as any;
   const quote = sessionAny.quote ?? sessionAny.event?.message?.quote;
-  return (
-    quote?.user?.id === session.selfId ||
-    quote?.userId === session.selfId ||
-    quote?.user?.id === session.bot?.selfId ||
-    quote?.userId === session.bot?.selfId
+  const botIds = [session.selfId, sessionAny.bot?.selfId].filter(
+    (id): id is string => typeof id === "string" && id.length > 0
   );
+  const quoteUserIds = [
+    quote?.user?.id,
+    quote?.userId,
+    quote?.author?.id,
+    quote?.authorId,
+  ].filter((id): id is string => typeof id === "string" && id.length > 0);
+  return quoteUserIds.some((id) => botIds.includes(id));
 }
 
 export function apply(ctx: Context, config: Config) {
